@@ -40,6 +40,7 @@ body {
   width: 50%;
   height: 200px;
   margin: 50px 50px 0px 50px;
+  transition: all 0.5s ease-in-out;
 }
 
 .col-right {
@@ -64,11 +65,24 @@ body {
   background-color: #f7fafc;
 }
 
+.card-body h3 {
+  margin-left: 10px;
+  color: #32325d;
+  font-size: 1.125rem;
+}
+
+#guildName {
+  cursor: pointer;
+  color: #4f3ff0;
+}
+
 .card-right {
   background-color: #f7fafc;
   padding: 20px;
   border-radius: 1rem 1rem 1rem 1rem;
   text-align: center;
+  transition: all 1s ease-in-out;
+  opacity: 0%;
 }
 
 .card-header h3 {

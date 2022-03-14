@@ -5,6 +5,10 @@ body {
   background-color: #f2f2f2;
 }
 
+a {
+  text-decoration: none;
+}
+
 .link-element {
   color: var(--linkColor) !important;
   text-decoration: none !important;
@@ -138,6 +142,7 @@ input[type="submit"]:hover {
   align-content: space-around;
   justify-content: center;
   margin: 100px;
+  transition: all 0.5s ease-in-out;
 }
 
 .loader-svg {
