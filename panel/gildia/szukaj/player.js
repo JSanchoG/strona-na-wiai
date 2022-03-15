@@ -1,110 +1,77 @@
 const urlParams = new URLSearchParams(window.location.search);
-const ignParam = urlParams.get("ign");
-
-const svgLoaderDiv = document.getElementById("preloader");
-const dataIgn = document.getElementById("data-ign");
-const daneDla = dataIgn.parentElement;
-
-$("#right-mask").delay(200).hide(1500);
-
-function ready() {
-  $(svgLoaderDiv).hide(800);
-  $(document.getElementsByClassName("wbg")[0]).slideDown("slow", function () {
-    $(document.getElementsByClassName("card-body")[0]).slideDown("slow");
-  });
-}
+const guildName = urlParams.get("guildName");
+const gNameTag = document.getElementById("gNameTag");
 
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// const userImage = document.getElementById("user-image");
-// userImage.src = `https://minotar.net/helm/${ignParam}/64.png`;
+function searchBar() {
+  let input = document.getElementById("search").value;
+  input = input.toLowerCase();
+  let x = document.getElementsByClassName("ign");
 
-// fetch(`https://api.mojang.com/users/profiles/minecraft/${ignParam}`)
-// .then((data) => {
-//     let name = JSON.parse(data).name;
-//     if (name == ignParam.toLowerCase()) {
-//         console.log("even");
-//     }
-// });
+  for (i = 0; i < x.length; i++) {
+    if (!x[i].innerHTML.toLowerCase().includes(input)) {
+      x[i].closest(".playerElem-body").style.display = "none";
+    } else {
+      x[i].closest(".playerElem-body").style.display = "block";
+    }
+  }
+}
 
 $(document).ready(function () {
   $.getJSON(
-    `http://jsanchog-api.herokuapp.com/player?ign=${ignParam}`,
+    `https://api.hypixel.net/guild?key=480b23e1-8603-4d38-96aa-f3045e54e134&name=${guildName}`,
+    // `json/g-${guildName}.json`,
     function (data) {
-      let name = data.ign;
-      let uuid = data.uuid;
-      if (name.toLowerCase() == ignParam.toLowerCase()) {
-        dataIgn.innerText = name;
-      } else {
-      }
-      let cuteName = data.skyblock.currentProfile.cute_name;
-      console.log(`Profile Name: ${cuteName}`);
-      $(document).ready(function () {
-        $.getJSON(
-          `https://sky.shiiyu.moe/api/v2/dungeons/${name}/${cuteName}`,
-          function (data) {
-            let cataLevel =
-              data.dungeons.catacombs.level.levelWithProgress.toFixed(2);
-            let healerLevel =
-              data.dungeons.classes.healer.experience.levelWithProgress;
-            let mageLevel =
-              data.dungeons.classes.mage.experience.levelWithProgress;
-            let berserkLevel =
-              data.dungeons.classes.berserk.experience.levelWithProgress;
-            let archerLevel =
-              data.dungeons.classes.archer.experience.levelWithProgress;
-            let tankLevel =
-              data.dungeons.classes.tank.experience.levelWithProgress;
-            document.getElementById("cata-level").innerText = cataLevel;
-            document.getElementById("healer-level").innerText =
-              healerLevel.toFixed(2);
-            healerProgress = Number(
-              (healerLevel - Math.trunc(healerLevel)).toFixed(2) * 100
-            );
-            document.getElementById(
-              "healerProgress"
-            ).style.width = `${healerProgress}%`;
-
-            document.getElementById("mage-level").innerText =
-              mageLevel.toFixed(2);
-            mageProgress = Number(
-              (mageLevel - Math.trunc(mageLevel)).toFixed(2) * 100
-            );
-            document.getElementById(
-              "mageProgress"
-            ).style.width = `${mageProgress}%`;
-
-            document.getElementById("berserk-level").innerText =
-              berserkLevel.toFixed(2);
-            berserkProgress = Number(
-              (berserkLevel - Math.trunc(berserkLevel)).toFixed(2) * 100
-            );
-            document.getElementById(
-              "berserkProgress"
-            ).style.width = `${berserkProgress}%`;
-
-            document.getElementById("archer-level").innerText =
-              archerLevel.toFixed(2);
-            archerProgress = Number(
-              (archerLevel - Math.trunc(archerLevel)).toFixed(2) * 100
-            );
-            document.getElementById(
-              "archerProgress"
-            ).style.width = `${archerProgress}%`;
-
-            document.getElementById("tank-level").innerText =
-              tankLevel.toFixed(2);
-            tankProgress = Number(
-              (tankLevel - Math.trunc(tankLevel)).toFixed(2) * 100
-            );
-            document.getElementById(
-              "tankProgress"
-            ).style.width = `${tankProgress}%`;
-            ready();
-          }
+      let gName = data.guild.name;
+      let gTag = data.guild.tag;
+      console.log(
+        `Guild Name: ${gName} [${gTag}]\nMembers: ${data.guild.members.length}/125`
+      );
+      gNameTag.innerText = `${gName} [${gTag}]`;
+      const cards = document.getElementsByClassName("cards")[0];
+      data.guild.members.forEach((member) => {
+        let div1 = document.createElement("div");
+        div1.classList.add("playerElem-body");
+        let img = document.createElement("img");
+        img.src = `https://mc-heads.net/avatar/${member.uuid}/36.png`;
+        img.setAttribute(
+          "onclick",
+          `window.open("https://sky.shiiyu.moe/${member.uuid}")`
         );
+        // if (member.uuid == "4b71487207474374b7be97362d56fa17") {
+        //   img.classList.add("rainbow");
+        // }
+        let h3 = document.createElement("h3");
+        h3.classList.add("ign");
+        let p1 = document.createElement("p");
+        p1.classList.add("gRank");
+        p1.innerText = `Ranga: ${member.rank}`;
+        let div2 = document.createElement("div");
+        div2.classList.add("elem-footer");
+        let p2 = document.createElement("p");
+        p2.classList.add("footer-stats");
+
+        let s = new Date(member.joined).toLocaleDateString("pl-PL");
+        fetch(`https://api.ashcon.app/mojang/v2/user/${member.uuid}`)
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            h3.innerText = data.username;
+            p2.innerText = `Dołączył do gildii ${s}`;
+            console.log(
+              `[${member.rank}] \x1b[36m${data.username}\x1b[37m joined the guild at \x1b[33m${s}`
+            );
+          });
+        div1.appendChild(img);
+        div1.appendChild(h3);
+        div2.appendChild(p1);
+        div2.appendChild(p2);
+        div1.appendChild(div2);
+        cards.appendChild(div1);
       });
     }
   );

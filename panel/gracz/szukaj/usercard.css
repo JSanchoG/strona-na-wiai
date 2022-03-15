@@ -103,13 +103,6 @@ body {
   line-height: 36px;
 }
 
-.berserk-image {
-  background-image: url("../../../files/img/items.webp");
-  background-position: -2688px -128px;
-  background-repeat: no-repeat;
-  display: inline-block;
-}
-
 .skill-text {
   display: inline;
   margin: 0px 0px 0px 40px;

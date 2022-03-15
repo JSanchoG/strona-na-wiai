@@ -17,14 +17,14 @@ gElem.addEventListener(
     let uuidT = dataUuid.innerText;
     $(document).ready(function () {
       $.getJSON(
-        `https://api.hypixel.net/guild?key=480b23e1-8603-4d38-96aa-f3045e54e134&player=${uuidT}`
-      ),
+        // `https://api.hypixel.net/guild?key=480b23e1-8603-4d38-96aa-f3045e54e134&player=${uuidT}`
+        `json/g.json`,
         function (data) {
           let gName = data.guild.name;
           let gTag = data.guild.tag;
-          gElem.innerText = `${gName} ${gTag}`;
-          // TODO: FIX ^
-        };
+          gElem.innerText = `${gName} [${gTag}]`;
+        }
+      );
     });
   },
   { once: true }
@@ -68,6 +68,7 @@ function numberWithCommas(x) {
 $(document).ready(function () {
   $.getJSON(
     `https://api.mojang.com/users/profiles/minecraft/${ignParam}`,
+    // `json/${ignParam}.json`,
     function (data) {
       let name = data.name;
       let uuid = data.id;
@@ -79,32 +80,8 @@ $(document).ready(function () {
 
       $(document).ready(function () {
         $.getJSON(
-          `https://api.hypixel.net/skyblock/profiles?key=480b23e1-8603-4d38-96aa-f3045e54e134&uuid=${uuid}`
-        ),
-          function (data) {
-            console.log(data);
-            if (data.profiles == null) return;
-
-            let saves = [];
-            let profileIds = [];
-            let cuteName = [];
-            data.profiles.forEach((memberData) => {
-              saves.push(parseInt(memberData.members[`${uuid}`].last_save));
-              profileIds.push(memberData.profile_id);
-              cuteName.push(memberData.cute_name);
-            });
-
-            let currentProfileId =
-              profileIds[saves.indexOf(Math.max.apply(Math, saves))];
-            let currentProfileCuteName =
-              cuteName[saves.indexOf(Math.max.apply(Math, saves))];
-            console.log(currentProfileId, cuteName);
-          };
-      });
-
-      $(document).ready(function () {
-        $.getJSON(
           `https://api.hypixel.net/skyblock/profiles?key=480b23e1-8603-4d38-96aa-f3045e54e134&uuid=${uuid}`,
+          // `json/${uuid}.json`,
           function (data) {
             if (data.profiles == null) return;
             let saves = [];
@@ -115,14 +92,15 @@ $(document).ready(function () {
               profileIds.push(memberData.profile_id);
               cuteName.push(memberData.cute_name);
             });
-            let currentProfileId =
-              profileIds[saves.indexOf(Math.max.apply(Math, saves))];
+            // let currentProfileId =
+            //   profileIds[saves.indexOf(Math.max.apply(Math, saves))];
             currentProfileCuteName =
               cuteName[saves.indexOf(Math.max.apply(Math, saves))];
 
             $(document).ready(function () {
               $.getJSON(
-                `https://sky.shiiyu.moe/api/v2/dungeons/${name}/${window.currentProfileCuteName}`,
+                `https://sky.shiiyu.moe/api/v2/dungeons/${name}/${currentProfileCuteName}`,
+                // `json/${name}-${currentProfileCuteName}.json`,
                 function (data) {
                   let cataLevel =
                     data.dungeons.catacombs.level.levelWithProgress.toFixed(2);
