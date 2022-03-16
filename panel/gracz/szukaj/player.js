@@ -15,17 +15,15 @@ gElem.addEventListener(
   "click",
   () => {
     let uuidT = dataUuid.innerText;
-    $(document).ready(function () {
-      $.getJSON(
-        // `https://api.hypixel.net/guild?key=480b23e1-8603-4d38-96aa-f3045e54e134&player=${uuidT}`
-        `json/g.json`,
-        function (data) {
-          let gName = data.guild.name;
-          let gTag = data.guild.tag;
-          gElem.innerText = `${gName} [${gTag}]`;
-        }
-      );
-    });
+    fetch(
+      `https://api.hypixel.net/guild?key=480b23e1-8603-4d38-96aa-f3045e54e134&player=${uuidT}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        let gName = data.guild.name;
+        let gTag = data.guild.tag;
+        gElem.innerText = `${gName} [${gTag}]`;
+      });
   },
   { once: true }
 );
@@ -65,107 +63,99 @@ function numberWithCommas(x) {
 //     }
 // });
 
-$(document).ready(function () {
-  $.getJSON(
-    `https://api.mojang.com/users/profiles/minecraft/${ignParam}`,
-    // `json/${ignParam}.json`,
-    function (data) {
-      let name = data.name;
-      let uuid = data.id;
-      if (!name) error();
-      if (name.toLowerCase() == ignParam.toLowerCase()) {
-        dataIgn.innerText = name;
-        dataUuid.innerText = uuid;
-      } else error();
+fetch(`https://api.mojang.com/users/profiles/minecraft/${ignParam}`)
+  .then((response) => response.json())
+  .then((data) => {
+    let name = data.name;
+    let uuid = data.id;
+    if (!name) error();
+    if (name.toLowerCase() == ignParam.toLowerCase()) {
+      dataIgn.innerText = name;
+      dataUuid.innerText = uuid;
+    } else error();
 
-      $(document).ready(function () {
-        $.getJSON(
-          `https://api.hypixel.net/skyblock/profiles?key=480b23e1-8603-4d38-96aa-f3045e54e134&uuid=${uuid}`,
-          // `json/${uuid}.json`,
-          function (data) {
-            if (data.profiles == null) return;
-            let saves = [];
-            let profileIds = [];
-            let cuteName = [];
-            data.profiles.forEach((memberData) => {
-              saves.push(parseInt(memberData.members[`${uuid}`].last_save));
-              profileIds.push(memberData.profile_id);
-              cuteName.push(memberData.cute_name);
-            });
-            // let currentProfileId =
-            //   profileIds[saves.indexOf(Math.max.apply(Math, saves))];
-            currentProfileCuteName =
-              cuteName[saves.indexOf(Math.max.apply(Math, saves))];
+    fetch(
+      `https://api.hypixel.net/skyblock/profiles?key=480b23e1-8603-4d38-96aa-f3045e54e134&uuid=${uuid}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.profiles == null) return;
+        let saves = [];
+        let profileIds = [];
+        let cuteName = [];
+        data.profiles.forEach((memberData) => {
+          saves.push(parseInt(memberData.members[`${uuid}`].last_save));
+          profileIds.push(memberData.profile_id);
+          cuteName.push(memberData.cute_name);
+        });
+        // let currentProfileId =
+        //   profileIds[saves.indexOf(Math.max.apply(Math, saves))];
+        currentProfileCuteName =
+          cuteName[saves.indexOf(Math.max.apply(Math, saves))];
 
-            $(document).ready(function () {
-              $.getJSON(
-                `https://sky.shiiyu.moe/api/v2/dungeons/${name}/${currentProfileCuteName}`,
-                // `json/${name}-${currentProfileCuteName}.json`,
-                function (data) {
-                  let cataLevel =
-                    data.dungeons.catacombs.level.levelWithProgress.toFixed(2);
-                  let healerLevel =
-                    data.dungeons.classes.healer.experience.levelWithProgress;
-                  let mageLevel =
-                    data.dungeons.classes.mage.experience.levelWithProgress;
-                  let berserkLevel =
-                    data.dungeons.classes.berserk.experience.levelWithProgress;
-                  let archerLevel =
-                    data.dungeons.classes.archer.experience.levelWithProgress;
-                  let tankLevel =
-                    data.dungeons.classes.tank.experience.levelWithProgress;
-                  document.getElementById("cata-level").innerText = cataLevel;
-                  document.getElementById("healer-level").innerText =
-                    healerLevel.toFixed(2);
-                  healerProgress = Number(
-                    (healerLevel - Math.trunc(healerLevel)).toFixed(2) * 100
-                  );
-                  document.getElementById(
-                    "healerProgress"
-                  ).style.width = `${healerProgress}%`;
+        fetch(
+          `https://sky.shiiyu.moe/api/v2/dungeons/${name}/${currentProfileCuteName}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            let cataLevel =
+              data.dungeons.catacombs.level.levelWithProgress.toFixed(2);
+            let healerLevel =
+              data.dungeons.classes.healer.experience.levelWithProgress;
+            let mageLevel =
+              data.dungeons.classes.mage.experience.levelWithProgress;
+            let berserkLevel =
+              data.dungeons.classes.berserk.experience.levelWithProgress;
+            let archerLevel =
+              data.dungeons.classes.archer.experience.levelWithProgress;
+            let tankLevel =
+              data.dungeons.classes.tank.experience.levelWithProgress;
+            document.getElementById("cata-level").innerText = cataLevel;
+            document.getElementById("healer-level").innerText =
+              healerLevel.toFixed(2);
+            healerProgress = Number(
+              (healerLevel - Math.trunc(healerLevel)).toFixed(2) * 100
+            );
+            document.getElementById(
+              "healerProgress"
+            ).style.width = `${healerProgress}%`;
 
-                  document.getElementById("mage-level").innerText =
-                    mageLevel.toFixed(2);
-                  mageProgress = Number(
-                    (mageLevel - Math.trunc(mageLevel)).toFixed(2) * 100
-                  );
-                  document.getElementById(
-                    "mageProgress"
-                  ).style.width = `${mageProgress}%`;
+            document.getElementById("mage-level").innerText =
+              mageLevel.toFixed(2);
+            mageProgress = Number(
+              (mageLevel - Math.trunc(mageLevel)).toFixed(2) * 100
+            );
+            document.getElementById(
+              "mageProgress"
+            ).style.width = `${mageProgress}%`;
 
-                  document.getElementById("berserk-level").innerText =
-                    berserkLevel.toFixed(2);
-                  berserkProgress = Number(
-                    (berserkLevel - Math.trunc(berserkLevel)).toFixed(2) * 100
-                  );
-                  document.getElementById(
-                    "berserkProgress"
-                  ).style.width = `${berserkProgress}%`;
+            document.getElementById("berserk-level").innerText =
+              berserkLevel.toFixed(2);
+            berserkProgress = Number(
+              (berserkLevel - Math.trunc(berserkLevel)).toFixed(2) * 100
+            );
+            document.getElementById(
+              "berserkProgress"
+            ).style.width = `${berserkProgress}%`;
 
-                  document.getElementById("archer-level").innerText =
-                    archerLevel.toFixed(2);
-                  archerProgress = Number(
-                    (archerLevel - Math.trunc(archerLevel)).toFixed(2) * 100
-                  );
-                  document.getElementById(
-                    "archerProgress"
-                  ).style.width = `${archerProgress}%`;
+            document.getElementById("archer-level").innerText =
+              archerLevel.toFixed(2);
+            archerProgress = Number(
+              (archerLevel - Math.trunc(archerLevel)).toFixed(2) * 100
+            );
+            document.getElementById(
+              "archerProgress"
+            ).style.width = `${archerProgress}%`;
 
-                  document.getElementById("tank-level").innerText =
-                    tankLevel.toFixed(2);
-                  tankProgress = Number(
-                    (tankLevel - Math.trunc(tankLevel)).toFixed(2) * 100
-                  );
-                  document.getElementById(
-                    "tankProgress"
-                  ).style.width = `${tankProgress}%`;
-                  ready();
-                }
-              );
-            });
-          }
-        );
+            document.getElementById("tank-level").innerText =
+              tankLevel.toFixed(2);
+            tankProgress = Number(
+              (tankLevel - Math.trunc(tankLevel)).toFixed(2) * 100
+            );
+            document.getElementById(
+              "tankProgress"
+            ).style.width = `${tankProgress}%`;
+            ready();
+          });
       });
-    }
-  );
-});
+  });
